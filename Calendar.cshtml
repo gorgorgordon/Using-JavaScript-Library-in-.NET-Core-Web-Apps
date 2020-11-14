@@ -1,0 +1,70 @@
+@model IEnumerable<MvcEvent.Models.Event>
+
+@{
+    ViewData["Title"] = "Calendar";
+
+    var events = (IEnumerable<MvcEvent.Models.Event>)ViewData["events"];
+    var length = events.Count();
+}
+
+<table id="todoTable">
+    @for (int i = 0; i < length; i++) {
+    <tr>
+        <td>@Html.Encode(events.ElementAt(i).Id )</td>
+        <td>@Html.Encode(events.ElementAt(i).Title)</td>
+        <td>@Html.Encode(events.ElementAt(i).StartDate)</td>
+    </tr>
+    }
+</table>
+
+
+<div class="calendarContainer">
+    <div id="calendar"></div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.js"></script>
+
+<script>
+    let eventsArr = loadData();
+    let calendar = initCalendar();
+
+    function loadData() {
+        let eventsArr = [];
+
+        let todoTable = document.getElementById("todoTable");
+        let trElem = todoTable.getElementsByTagName("tr");
+        console.log(trElem);
+        for (let tr of trElem) {
+            console.log(tr);
+            let tdElems = tr.getElementsByTagName("td");
+            let eventObj = {
+                id: tdElems[0].innerText,
+                title: tdElems[1].innerText,
+                start: tdElems[2].innerText,
+            }
+
+            eventsArr.push(eventObj);
+        }
+
+        return eventsArr;
+    }
+
+    function initCalendar() {
+        var calendarEl = document.getElementById('calendar');
+
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: eventsArr,
+    });
+
+    calendar.render();
+
+    return calendar;
+    }
+</script>
